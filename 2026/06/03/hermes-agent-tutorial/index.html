@@ -12,7 +12,7 @@
 <meta property="og:description" content="我为什么要装它说实话，市面上的 AI 助手太多了——Copilot、Cursor、Claude Code、Codex，各有各的好。但有个问题一直困扰我：它们只活在特定 App 里。你在电脑前写代码，它们能帮上忙；你出门了想改个东西、问个事，就只能干等着。 Hermes Agent 解决的就是这个问题。它本质上是一个”跑在你自己服务器上的 AI”，你可以在终端里用、在微信里用、在 Telegram">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-06-03T09:30:00.000Z">
-<meta property="article:modified_time" content="2026-06-03T09:20:54.981Z">
+<meta property="article:modified_time" content="2026-06-03T09:22:20.344Z">
 <meta property="article:author" content="Neil">
 <meta property="article:tag" content="AI">
 <meta property="article:tag" content="Hermes">
@@ -162,42 +162,58 @@
 
 <p>技能是纯 Markdown 文件，放在 <code>~/.hermes/skills/</code> 下面，你甚至可以自己手写。</p>
 <hr>
-<h2 id="接入聊天平台——这部分我重点讲"><a href="#接入聊天平台——这部分我重点讲" class="headerlink" title="接入聊天平台——这部分我重点讲"></a>接入聊天平台——这部分我重点讲</h2><p>前面说了，Hermes 最吸引我的是随时随地能用。核心就是这个 Gateway 功能。</p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>Gateway 是一个常驻后台服务，它在你的服务器上跑着，同时连接多个聊天平台。你在微信发一条消息 → Gateway 收到 → 转发给 Hermes Agent 处理 → 把结果发回你的微信。整个过程你的服务器是”大脑”，聊天平台只是”界面”。</p>
-<h3 id="配置微信"><a href="#配置微信" class="headerlink" title="配置微信"></a>配置微信</h3><p>Hermes 支持微信（Weixin）。配置步骤如下：</p>
-<p><strong>第一步：启动 Gateway 配置</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway setup</span><br></pre></td></tr></table></figure>
+<h2 id="接入微信——让你的-AI-住在微信里"><a href="#接入微信——让你的-AI-住在微信里" class="headerlink" title="接入微信——让你的 AI 住在微信里"></a>接入微信——让你的 AI 住在微信里</h2><p>这节是整篇教程最重要的部分，也是 Hermes 最打动我的功能——<strong>把 AI 助手接到微信里，像跟朋友聊天一样使用</strong>。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>Hermes 的 Gateway 是一个常驻后台服务，跑在你的服务器上。它的工作很简单：你在微信发一条消息 → Gateway 收到 → 交给 Hermes Agent 处理 → 把结果发回你的微信。对你来说只是发了条微信，但背后你的服务器在读文件、写代码、搜网页。<strong>微信是界面，服务器是大脑。</strong></p>
+<h3 id="第一步：准备一个微信账号"><a href="#第一步：准备一个微信账号" class="headerlink" title="第一步：准备一个微信账号"></a>第一步：准备一个微信账号</h3><p>首先你得有个微信号给 Hermes 用。这里有一个重要建议：<strong>不要用你的主力微信号</strong>。</p>
+<p>原因不是技术限制，而是微信对”非正常人类操作”很敏感——Hermes 可能高频率收发消息，偶尔会触发风控。虽然不至于封号（我用了挺久没被封过），但万一呢？所以搞个小号或者用家人的备用号比较稳妥。</p>
+<p>如果实在没有小号，主力号也能用，就是刚开始建议悠着点，别一上来连发几十条。</p>
+<h3 id="第二步：配置-Gateway"><a href="#第二步：配置-Gateway" class="headerlink" title="第二步：配置 Gateway"></a>第二步：配置 Gateway</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway setup</span><br></pre></td></tr></table></figure>
 
-<p>选 <code>weixin</code>，然后你需要准备：</p>
-<ul>
-<li>一个微信账号（建议用专门的小号，后续会详说）</li>
-<li>微信扫码登录授权的令牌（向导会引导你完成）</li>
-</ul>
-<p><strong>第二步：运行 Gateway</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway run</span><br></pre></td></tr></table></figure>
+<p>进入向导后选 <code>weixin</code>，然后跟着提示走。核心步骤就是用你的备用微信号扫码，给 Hermes 授权登录。扫完码终端会显示类似 <code>Weixin: Logged in as xxx</code> 的提示，说明登录成功。</p>
+<h3 id="第三步：启动-Gateway"><a href="#第三步：启动-Gateway" class="headerlink" title="第三步：启动 Gateway"></a>第三步：启动 Gateway</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway run</span><br></pre></td></tr></table></figure>
 
-<p>第一次跑会要求你扫码登录微信。扫完之后终端里会显示 <code>Connected</code>。</p>
-<p><strong>第三步：注册为后台服务（推荐）</strong></p>
-<p>你不可能一直开着终端，所以把它注册成系统服务：</p>
+<p>这时候 Gateway 就在前台跑起来了。你可以打开微信，在 Hermes 登录的那个账号里给自己发一条消息试试：</p>
+<blockquote>
+<p>“你好”</p>
+</blockquote>
+<p>Hermes 应该会回复你。如果回复了，恭喜，你的 AI 已经住进微信了 🎉</p>
+<h3 id="第四步：设为后台服务"><a href="#第四步：设为后台服务" class="headerlink" title="第四步：设为后台服务"></a>第四步：设为后台服务</h3><p>你肯定不想一直开着终端，所以把它注册成系统服务：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway install</span><br></pre></td></tr></table></figure>
 
-<p>这样即使你 SSH 断开了，它也在后台跑着。需要看状态：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway status</span><br></pre></td></tr></table></figure>
+<p>这条命令会把 Gateway 注册为 systemd 用户服务。之后即使你关掉终端、SSH 断开，它也在后台默默运行。</p>
+<p>日常管理命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway status    <span class="comment"># 看是否在线</span></span><br><span class="line">hermes gateway restart   <span class="comment"># 重启</span></span><br><span class="line">hermes gateway stop      <span class="comment"># 停止</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="微信自己的坑"><a href="#微信自己的坑" class="headerlink" title="微信自己的坑"></a>微信自己的坑</h3><ul>
-<li><strong>微信账号会被风控</strong>：别用主力号，容易触发。用一个小号，或者找朋友借一个不活跃的号。刚开始用的前 24 小时尽量少发消息，让它”热身”。</li>
-<li><strong>扫码登录偶尔掉线</strong>：微信网页版协议不稳定，有时候会莫名其妙断开。我已经习惯了，说一句”帮我重启 gateway”就行。建议配合 cron 做个定时检查。</li>
-<li><strong>被封了怎么办</strong>：说实话没办法。这是平台政策，不是技术问题。如果真的封了，换号继续。</li>
-</ul>
-<h3 id="配置-Telegram（比微信稳）"><a href="#配置-Telegram（比微信稳）" class="headerlink" title="配置 Telegram（比微信稳）"></a>配置 Telegram（比微信稳）</h3><p>如果你没有微信执念，我更推荐 Telegram。配置流程更简单：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway setup   <span class="comment"># 选 telegram</span></span><br></pre></td></tr></table></figure>
-
-<p>关键是先去 <a target="_blank" rel="noopener" href="https://t.me/BotFather">@BotFather</a> 建一个 bot，拿到 Token。填进去就行，不需要扫码，不需要担心风控。Telegram 的 Bot API 非常稳定，我用了几个月没掉过一次。</p>
-<h3 id="其他平台"><a href="#其他平台" class="headerlink" title="其他平台"></a>其他平台</h3><p>Hermes 还支持 Discord、Slack、WhatsApp、Signal、邮件、短信、钉钉、飞书、企业微信等。配置流程大同小异，<code>hermes gateway setup</code> 向导会一步步引导。同一台服务器可以同时连多个平台，你在微信发了消息，去 Telegram 也能看到回复，因为它们是同一个 Agent。</p>
-<h3 id="指定”家”频道"><a href="#指定”家”频道" class="headerlink" title="指定”家”频道"></a>指定”家”频道</h3><p>连上之后，在你想设为默认的聊天窗口输入：</p>
+<h3 id="第五步：指定默认回复目标"><a href="#第五步：指定默认回复目标" class="headerlink" title="第五步：指定默认回复目标"></a>第五步：指定默认回复目标</h3><p>连上微信后，你在你跟 Hermes 的聊天窗口发一条：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/sethome</span><br></pre></td></tr></table></figure>
 
-<p>这样你不需要每次都指定目标，Hermes 知道该回哪里。</p>
+<p>这会告诉 Hermes：”以后默认就回这个聊天”。不需要每次都指定目标。</p>
+<h3 id="微信使用技巧"><a href="#微信使用技巧" class="headerlink" title="微信使用技巧"></a>微信使用技巧</h3><p><strong>私聊 vs 群聊</strong></p>
+<p>Hermes 支持私聊和群聊。在群里 @它 就能触发。建议建一个”AI 助手专属群”，只有你和 Hermes，这样聊天记录不会跟其他人混在一起。</p>
+<p><strong>设置不同的 profile</strong></p>
+<p>如果你想让工作相关的对话和私人对话隔离开，可以创建多个 profile：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hermes profile create work     <span class="comment"># 工作用的 profile</span></span><br><span class="line">hermes profile create personal <span class="comment"># 私人用的 profile</span></span><br></pre></td></tr></table></figure>
+
+<p>每个 profile 有独立的配置、记忆和技能，互不干扰。然后在微信里通过指定的触发方式（比如不同群）绑到不同 profile 上。</p>
+<p><strong>发图片和文件</strong></p>
+<p>微信里发给 Hermes 的图片它会自动分析，你发个截图问”这段代码什么意思”，它就能看懂。它返回的结果里如果有文件，会自动以附件形式发给你。</p>
+<h3 id="稳定性-常见问题"><a href="#稳定性-常见问题" class="headerlink" title="稳定性 &amp; 常见问题"></a>稳定性 &amp; 常见问题</h3><p><strong>Q: 微信扫码登录掉了怎么办？</strong></p>
+<p>偶尔会掉，可能是网络波动或者微信那边踢了。解决方法很简单——你在终端跑：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes gateway restart</span><br></pre></td></tr></table></figure>
+
+<p>它会重新让你扫码。为了省心，可以加个 cron 定时检查，掉了自动重启：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes cron create <span class="string">&quot;0 */6 * * *&quot;</span> --prompt <span class="string">&quot;检查 gateway 微信连接状态，如果离线就重启&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Q: 会不会被封号？</strong></p>
+<p>我用小号跑了几个月，目前没有被封。几点建议：</p>
+<ul>
+<li>刚登录的前几个小时不要高频发消息，给它”暖机”</li>
+<li>不要用这个号加太多好友或者发广告</li>
+<li>正常使用的话微信一般不会管</li>
+</ul>
+<p><strong>Q: 微信平台有什么限制？</strong></p>
+<p>主要是消息频率。微信对机器人行为有隐形限速，如果 Hermes 短时间内发太多条消息，可能会被暂时限制。正常使用（几秒一条）完全没问题。</p>
+<h3 id="其他支持的平台"><a href="#其他支持的平台" class="headerlink" title="其他支持的平台"></a>其他支持的平台</h3><p>除了微信，Hermes 还支持 Telegram、Discord、Slack、WhatsApp、Signal、钉钉、飞书、企业微信等十多个平台。配置方式都一样——<code>hermes gateway setup</code> 选对应平台即可。而且同一个 Gateway 可以同时连多个平台，你在微信发的消息、Telegram 上也能看到回复，因为背后是同一个 Agent 大脑。</p>
 <hr>
 <h2 id="进阶玩法"><a href="#进阶玩法" class="headerlink" title="进阶玩法"></a>进阶玩法</h2><h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><p>你可以让 Hermes 定时做事情。比如每天早上 9 点帮你汇总昨天的 GitHub issue：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hermes cron create <span class="string">&quot;0 9 * * *&quot;</span> --prompt <span class="string">&quot;帮我汇总昨天 GitHub 上的新 issue&quot;</span></span><br></pre></td></tr></table></figure>
@@ -215,7 +231,7 @@
         <aside class="toc-sidebar">
   <div class="toc-wrapper">
     <h3 class="toc-title">Contents</h3>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%A3%85%E5%AE%83"><span class="toc-text">我为什么要装它</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="toc-text">环境要求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E2%80%94%E2%80%94%E7%9C%9F%E7%9A%84%E5%B0%B1%E4%B8%80%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-text">安装——真的就一行命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E9%85%8D%E7%BD%AE%E2%80%94%E2%80%94%E9%80%89%E5%AF%B9%E4%BD%A0%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-text">首次配置——选对你的模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%AF%B9%E8%AF%9D"><span class="toc-text">第一次对话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E8%83%BD%E7%B3%BB%E7%BB%9F%E2%80%94%E2%80%94%E8%BF%99%E6%89%8D%E6%98%AF%E5%AE%83%E5%8F%98%E8%81%AA%E6%98%8E%E7%9A%84%E5%85%B3%E9%94%AE"><span class="toc-text">技能系统——这才是它变聪明的关键</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5%E8%81%8A%E5%A4%A9%E5%B9%B3%E5%8F%B0%E2%80%94%E2%80%94%E8%BF%99%E9%83%A8%E5%88%86%E6%88%91%E9%87%8D%E7%82%B9%E8%AE%B2"><span class="toc-text">接入聊天平台——这部分我重点讲</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%BE%AE%E4%BF%A1"><span class="toc-text">配置微信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AE%E4%BF%A1%E8%87%AA%E5%B7%B1%E7%9A%84%E5%9D%91"><span class="toc-text">微信自己的坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-Telegram%EF%BC%88%E6%AF%94%E5%BE%AE%E4%BF%A1%E7%A8%B3%EF%BC%89"><span class="toc-text">配置 Telegram（比微信稳）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%B9%B3%E5%8F%B0"><span class="toc-text">其他平台</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E2%80%9D%E5%AE%B6%E2%80%9D%E9%A2%91%E9%81%93"><span class="toc-text">指定”家”频道</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E9%98%B6%E7%8E%A9%E6%B3%95"><span class="toc-text">进阶玩法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1"><span class="toc-text">定时任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%BD%AE%E6%8D%A2"><span class="toc-text">多模型轮换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7"><span class="toc-text">自定义工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%A3%85%E5%AE%83"><span class="toc-text">我为什么要装它</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="toc-text">环境要求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E2%80%94%E2%80%94%E7%9C%9F%E7%9A%84%E5%B0%B1%E4%B8%80%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-text">安装——真的就一行命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E9%85%8D%E7%BD%AE%E2%80%94%E2%80%94%E9%80%89%E5%AF%B9%E4%BD%A0%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-text">首次配置——选对你的模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%AF%B9%E8%AF%9D"><span class="toc-text">第一次对话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E8%83%BD%E7%B3%BB%E7%BB%9F%E2%80%94%E2%80%94%E8%BF%99%E6%89%8D%E6%98%AF%E5%AE%83%E5%8F%98%E8%81%AA%E6%98%8E%E7%9A%84%E5%85%B3%E9%94%AE"><span class="toc-text">技能系统——这才是它变聪明的关键</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5%E5%BE%AE%E4%BF%A1%E2%80%94%E2%80%94%E8%AE%A9%E4%BD%A0%E7%9A%84-AI-%E4%BD%8F%E5%9C%A8%E5%BE%AE%E4%BF%A1%E9%87%8C"><span class="toc-text">接入微信——让你的 AI 住在微信里</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%87%86%E5%A4%87%E4%B8%80%E4%B8%AA%E5%BE%AE%E4%BF%A1%E8%B4%A6%E5%8F%B7"><span class="toc-text">第一步：准备一个微信账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE-Gateway"><span class="toc-text">第二步：配置 Gateway</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%90%AF%E5%8A%A8-Gateway"><span class="toc-text">第三步：启动 Gateway</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%AE%BE%E4%B8%BA%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1"><span class="toc-text">第四步：设为后台服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E6%8C%87%E5%AE%9A%E9%BB%98%E8%AE%A4%E5%9B%9E%E5%A4%8D%E7%9B%AE%E6%A0%87"><span class="toc-text">第五步：指定默认回复目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AE%E4%BF%A1%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="toc-text">微信使用技巧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%B3%E5%AE%9A%E6%80%A7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">稳定性 &amp; 常见问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%94%AF%E6%8C%81%E7%9A%84%E5%B9%B3%E5%8F%B0"><span class="toc-text">其他支持的平台</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E9%98%B6%E7%8E%A9%E6%B3%95"><span class="toc-text">进阶玩法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1"><span class="toc-text">定时任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%A8%A1%E5%9E%8B%E8%BD%AE%E6%8D%A2"><span class="toc-text">多模型轮换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7"><span class="toc-text">自定义工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
   </div>
 </aside>
 
